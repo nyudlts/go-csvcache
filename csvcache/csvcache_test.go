@@ -31,6 +31,7 @@ func TestLoadCache(t *testing.T) {
 	if err != nil {
 		t.Errorf("problem opening %s", fixturePath)
 	}
+	defer r.Close()
 
 	err = sut.LoadCache(r)
 	if err != nil {
@@ -47,6 +48,7 @@ func TestHeaderRow(t *testing.T) {
 	if err != nil {
 		t.Errorf("problem opening %s", fixturePath)
 	}
+	defer r.Close()
 
 	err = cache.LoadCache(r)
 	if err != nil {
@@ -78,6 +80,7 @@ func TestGetRecordPresent(t *testing.T) {
 	if err != nil {
 		t.Errorf("problem opening %s", fixturePath)
 	}
+	defer r.Close()
 
 	err = sut.LoadCache(r)
 	if err != nil {
@@ -97,6 +100,7 @@ func TestGetRecordMissing(t *testing.T) {
 	if err != nil {
 		t.Errorf("problem opening %s", fixturePath)
 	}
+	defer r.Close()
 
 	err = sut.LoadCache(r)
 	if err != nil {
