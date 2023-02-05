@@ -68,7 +68,7 @@ func TestHeaderRow(t *testing.T) {
 	assertStringsEqual(want, got, t)
 }
 
-func TestGetRecord(t *testing.T) {
+func TestGetRecordPresent(t *testing.T) {
 	var want, got []string
 
 	sut := new(CSVCache)
@@ -87,4 +87,22 @@ func TestGetRecord(t *testing.T) {
 	want = []string{"ghx3fpf7", "image_set", "2"}
 	got = sut.GetRecord("ghx3fpf7")
 	assertRecordsEqual(want, got, t)
+}
+
+func TestGetRecordMissing(t *testing.T) {
+	sut := new(CSVCache)
+
+	fixturePath := "./testdata/basic.csv"
+	r, err := os.Open(fixturePath)
+	if err != nil {
+		t.Errorf("problem opening %s", fixturePath)
+	}
+
+	err = sut.LoadCache(r)
+	if err != nil {
+		t.Errorf("problem loading the cache")
+	}
+
+	got := sut.GetRecord("this-key-does-not-have-a-record")
+	assertRecordsEqual(nil, got, t)
 }
