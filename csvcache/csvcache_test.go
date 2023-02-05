@@ -11,6 +11,12 @@ func assertStringsEqual(want, got string, t *testing.T) {
 	}
 }
 
+func assertBoolsEqual(want, got bool, t *testing.T) {
+	if want != got {
+		t.Errorf("want: %v , got: %v", want, got)
+	}
+}
+
 func assertRecordsEqual(want, got []string, t *testing.T) {
 	if len(want) != len(got) {
 		t.Errorf("record lengths do not match: len(want): %d , len(got): %d", len(want), len(got))
@@ -109,4 +115,60 @@ func TestGetRecordMissing(t *testing.T) {
 
 	got := sut.GetRecord("this-key-does-not-have-a-record")
 	assertRecordsEqual(nil, got, t)
+}
+
+func TestAddRecord(t *testing.T) {
+	sut := new(CSVCache)
+
+	fixturePath := "./testdata/basic.csv"
+	r, err := os.Open(fixturePath)
+	if err != nil {
+		t.Errorf("problem opening %s", fixturePath)
+	}
+	defer r.Close()
+
+	err = sut.LoadCache(r)
+	if err != nil {
+		t.Errorf("problem loading the cache")
+	}
+
+	got := sut.GetRecord("9ec2c7f5d0c4")
+	assertRecordsEqual(nil, got, t)
+
+	record := []string{"9ec2c7f5d0c4", "whoop", "97"}
+	sut.AddRecord(record)
+
+	want := []string{"9ec2c7f5d0c4", "whoop", "97"}
+	got = sut.GetRecord("9ec2c7f5d0c4")
+	assertRecordsEqual(want, got, t)
+
+}
+
+func TestIsModified(t *testing.T) {
+	sut := new(CSVCache)
+
+	fixturePath := "./testdata/basic.csv"
+	r, err := os.Open(fixturePath)
+	if err != nil {
+		t.Errorf("problem opening %s", fixturePath)
+	}
+	defer r.Close()
+
+	err = sut.LoadCache(r)
+	if err != nil {
+		t.Errorf("problem loading the cache")
+	}
+
+	got := sut.GetRecord("9ec2c7f5d0c4")
+	assertRecordsEqual(nil, got, t)
+	assertBoolsEqual(false, sut.IsModified(), t)
+
+	record := []string{"9ec2c7f5d0c4", "whoop", "97"}
+	sut.AddRecord(record)
+	assertBoolsEqual(true, sut.IsModified(), t)
+
+	want := []string{"9ec2c7f5d0c4", "whoop", "97"}
+	got = sut.GetRecord("9ec2c7f5d0c4")
+	assertRecordsEqual(want, got, t)
+
 }

@@ -14,7 +14,6 @@ type CSVCache struct {
 func (csvc *CSVCache) LoadCache(r io.Reader) error {
 
 	csvc.cache = make(map[string][]string)
-
 	csvr := csv.NewReader(r)
 
 	headerRow := true
@@ -36,6 +35,8 @@ func (csvc *CSVCache) LoadCache(r io.Reader) error {
 		// load the data into the cache
 		csvc.cache[row[0]] = row
 	}
+
+	csvc.modified = false
 	return nil
 }
 
@@ -47,4 +48,8 @@ func (csvc *CSVCache) AddRecord(row []string) {
 	csvc.modified = true
 
 	csvc.cache[row[0]] = row
+}
+
+func (csvc *CSVCache) IsModified() bool {
+	return csvc.modified
 }
