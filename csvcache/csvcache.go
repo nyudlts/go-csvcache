@@ -53,3 +53,23 @@ func (csvc *CSVCache) AddRecord(row []string) {
 func (csvc *CSVCache) IsModified() bool {
 	return csvc.modified
 }
+
+func (csvc *CSVCache) WriteCache(w io.Writer) error {
+	csvw := csv.NewWriter(w)
+
+	csvw.Write(csvc.HeaderRow)
+
+	for _, record := range csvc.cache {
+		err := csvw.Write(record)
+		if err != nil {
+			return err
+		}
+	}
+
+	csvw.Flush()
+	if csvw.Error() != nil {
+		return csvw.Error()
+	}
+
+	return nil
+}

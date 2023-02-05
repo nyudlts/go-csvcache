@@ -170,5 +170,46 @@ func TestIsModified(t *testing.T) {
 	want := []string{"9ec2c7f5d0c4", "whoop", "97"}
 	got = sut.GetRecord("9ec2c7f5d0c4")
 	assertRecordsEqual(want, got, t)
+}
+
+func TestWriteCache(t *testing.T) {
+	sut1 := new(CSVCache)
+
+	fixturePath := "./testdata/basic.csv"
+	tmpFilePath := "./testdata/tmp.csv"
+
+	r, err := os.Open(fixturePath)
+	if err != nil {
+		t.Errorf("problem opening %s", fixturePath)
+	}
+	defer r.Close()
+
+	err = sut1.LoadCache(r)
+	if err != nil {
+		t.Errorf("problem loading the cache")
+	}
+
+	got := sut1.GetRecord("9ec2c7f5d0c4")
+	assertRecordsEqual(nil, got, t)
+	assertBoolsEqual(false, sut1.IsModified(), t)
+
+	record := []string{"9ec2c7f5d0c4", "whoop", "97"}
+	sut1.AddRecord(record)
+	assertBoolsEqual(true, sut1.IsModified(), t)
+
+	want := []string{"9ec2c7f5d0c4", "whoop", "97"}
+	got = sut1.GetRecord("9ec2c7f5d0c4")
+	assertRecordsEqual(want, got, t)
+
+	w, err := os.Create(tmpFilePath)
+	if err != nil {
+		t.Errorf("problem creating %s", tmpFilePath)
+	}
+	defer w.Close()
+
+	err = sut1.WriteCache(w)
+	if err != nil {
+		t.Errorf("problem writing %s", tmpFilePath)
+	}
 
 }
