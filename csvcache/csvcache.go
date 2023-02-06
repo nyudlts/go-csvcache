@@ -6,14 +6,28 @@ import (
 )
 
 type CSVCache struct {
-	modified  bool
-	Header []string
-	cache     map[string][]string
+	modified bool
+	Header   []string
+	cache    map[string][]string
+}
+
+func NewCSVCache() *CSVCache {
+	csvc := new(CSVCache)
+	assertCacheInit(csvc)
+	return csvc
+}
+
+func assertCacheInit(csvc *CSVCache) {
+	// initialize the map variable if it is nil
+	if csvc.cache == nil {
+		csvc.cache = make(map[string][]string)
+	}
 }
 
 func (csvc *CSVCache) LoadCache(r io.Reader) error {
 
-	csvc.cache = make(map[string][]string)
+	assertCacheInit(csvc)
+
 	csvr := csv.NewReader(r)
 
 	headerRecord := true
@@ -41,10 +55,13 @@ func (csvc *CSVCache) LoadCache(r io.Reader) error {
 }
 
 func (csvc *CSVCache) GetRecord(key string) []string {
+	assertCacheInit(csvc)
 	return csvc.cache[key]
 }
 
 func (csvc *CSVCache) AddRecord(record []string) {
+	assertCacheInit(csvc)
+
 	csvc.modified = true
 
 	csvc.cache[record[0]] = record
@@ -55,6 +72,8 @@ func (csvc *CSVCache) IsModified() bool {
 }
 
 func (csvc *CSVCache) WriteCache(w io.Writer) error {
+	assertCacheInit(csvc)
+
 	csvw := csv.NewWriter(w)
 
 	csvw.Write(csvc.Header)

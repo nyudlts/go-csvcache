@@ -123,6 +123,19 @@ func TestIsModified(t *testing.T) {
 	assertRecordsEqual(want, got, t)
 }
 
+func TestAddRecordToCSVCThatWasNotLoadedFromFiled(t *testing.T) {
+
+	sut := new(CSVCache)
+
+	record := []string{"9ec2c7f5d0c4", "whoop", "97"}
+	sut.AddRecord(record)
+	assertBoolsEqual(true, sut.IsModified(), t)
+
+	want := []string{"9ec2c7f5d0c4", "whoop", "97"}
+	got := sut.GetRecord("9ec2c7f5d0c4")
+	assertRecordsEqual(want, got, t)
+}
+
 func TestWriteCache(t *testing.T) {
 
 	sut1 := createAndLoadCSVCache(fixturePath, t)
