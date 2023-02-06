@@ -11,28 +11,29 @@ type CSVCache struct {
 	cache    map[string][]string
 }
 
-func NewCSVCache() *CSVCache {
-	csvc := new(CSVCache)
-	assertCacheInit(csvc)
-	return csvc
-}
-
-func assertCacheInit(csvc *CSVCache) {
+func ensureCacheInit(csvc *CSVCache) {
 	// initialize the map variable if it is nil
 	if csvc.cache == nil {
 		csvc.cache = make(map[string][]string)
 	}
+}
 
-	// // initialize the Header if it is empty
-	// if len(csvc.Header) == 0 {
-	// 	// add default header
-	// 	csvc.Header = []string{"unique_id", "do_type", "count"}
-	// }
+func ensureHeaderInit(csvc *CSVCache) {
+	// initialize the Header if it is empty
+	if len(csvc.Header) == 0 {
+		// add default header
+		csvc.Header = []string{"unique_id", "do_type", "count"}
+	}
+}
+
+func NewCSVCache() *CSVCache {
+	csvc := new(CSVCache)
+	ensureCacheInit(csvc)
+	ensureHeaderInit(csvc)
+	return csvc
 }
 
 func (csvc *CSVCache) LoadCache(r io.Reader) error {
-
-	assertCacheInit(csvc)
 
 	csvr := csv.NewReader(r)
 
@@ -61,15 +62,11 @@ func (csvc *CSVCache) LoadCache(r io.Reader) error {
 }
 
 func (csvc *CSVCache) GetRecord(key string) []string {
-	assertCacheInit(csvc)
 	return csvc.cache[key]
 }
 
 func (csvc *CSVCache) AddRecord(record []string) {
-	assertCacheInit(csvc)
-
 	csvc.modified = true
-
 	csvc.cache[record[0]] = record
 }
 
@@ -78,10 +75,7 @@ func (csvc *CSVCache) IsModified() bool {
 }
 
 func (csvc *CSVCache) WriteCache(w io.Writer) error {
-	assertCacheInit(csvc)
-
 	csvw := csv.NewWriter(w)
-
 	csvw.Write(csvc.Header)
 
 	for _, record := range csvc.cache {
