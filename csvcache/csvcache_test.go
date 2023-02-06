@@ -33,7 +33,7 @@ func assertRecordsEqual(want, got []string, t *testing.T) {
 }
 
 func createAndLoadCSVCache(path string, t *testing.T) *CSVCache {
-	c := new(CSVCache)
+	c := NewCSVCache()
 
 	r, err := os.Open(path)
 	if err != nil {
@@ -123,9 +123,9 @@ func TestIsModified(t *testing.T) {
 	assertRecordsEqual(want, got, t)
 }
 
-func TestAddRecordToCSVCThatWasNotLoadedFromFiled(t *testing.T) {
+func TestAddRecordToCSVCThatWasNotLoadedFromFile(t *testing.T) {
 
-	sut := new(CSVCache)
+	sut := NewCSVCache()
 
 	record := []string{"9ec2c7f5d0c4", "whoop", "97"}
 	sut.AddRecord(record)
@@ -182,4 +182,13 @@ func TestWriteCache(t *testing.T) {
 	if err != nil {
 		t.Errorf("problem removing %s", tmpFilePath)
 	}
+}
+
+func TestHeaderInitialized(t *testing.T) {
+
+	sut := NewCSVCache()
+
+	want := []string{"unique_id", "do_type", "count"}
+	got := sut.Header
+	assertRecordsEqual(want, got, t)
 }
