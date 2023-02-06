@@ -22,6 +22,12 @@ func assertCacheInit(csvc *CSVCache) {
 	if csvc.cache == nil {
 		csvc.cache = make(map[string][]string)
 	}
+
+	// // initialize the Header if it is empty
+	// if len(csvc.Header) == 0 {
+	// 	// add default header
+	// 	csvc.Header = []string{"unique_id", "do_type", "count"}
+	// }
 }
 
 func (csvc *CSVCache) LoadCache(r io.Reader) error {
@@ -30,7 +36,7 @@ func (csvc *CSVCache) LoadCache(r io.Reader) error {
 
 	csvr := csv.NewReader(r)
 
-	headerRecord := true
+	headerRow := true
 	for {
 		record, err := csvr.Read()
 		if err != nil {
@@ -41,8 +47,8 @@ func (csvc *CSVCache) LoadCache(r io.Reader) error {
 			}
 		}
 		// skip the header record
-		if headerRecord {
-			headerRecord = false
+		if headerRow {
+			headerRow = false
 			csvc.Header = record
 			continue
 		}
