@@ -7,7 +7,7 @@ import (
 
 type CSVCache struct {
 	modified  bool
-	HeaderRow []string
+	Header []string
 	cache     map[string][]string
 }
 
@@ -16,9 +16,9 @@ func (csvc *CSVCache) LoadCache(r io.Reader) error {
 	csvc.cache = make(map[string][]string)
 	csvr := csv.NewReader(r)
 
-	headerRow := true
+	headerRecord := true
 	for {
-		row, err := csvr.Read()
+		record, err := csvr.Read()
 		if err != nil {
 			if err == io.EOF {
 				break
@@ -26,14 +26,14 @@ func (csvc *CSVCache) LoadCache(r io.Reader) error {
 				return err
 			}
 		}
-		// skip the header row
-		if headerRow {
-			headerRow = false
-			csvc.HeaderRow = row
+		// skip the header record
+		if headerRecord {
+			headerRecord = false
+			csvc.Header = record
 			continue
 		}
 		// load the data into the cache
-		csvc.cache[row[0]] = row
+		csvc.cache[record[0]] = record
 	}
 
 	csvc.modified = false
@@ -44,10 +44,10 @@ func (csvc *CSVCache) GetRecord(key string) []string {
 	return csvc.cache[key]
 }
 
-func (csvc *CSVCache) AddRecord(row []string) {
+func (csvc *CSVCache) AddRecord(record []string) {
 	csvc.modified = true
 
-	csvc.cache[row[0]] = row
+	csvc.cache[record[0]] = record
 }
 
 func (csvc *CSVCache) IsModified() bool {
@@ -57,7 +57,7 @@ func (csvc *CSVCache) IsModified() bool {
 func (csvc *CSVCache) WriteCache(w io.Writer) error {
 	csvw := csv.NewWriter(w)
 
-	csvw.Write(csvc.HeaderRow)
+	csvw.Write(csvc.Header)
 
 	for _, record := range csvc.cache {
 		err := csvw.Write(record)

@@ -53,11 +53,11 @@ func createAndLoadCSVCache(path string, t *testing.T) *CSVCache {
 // begin tests
 //------------------------------------------------------------------------------
 
-func TestHeaderRow(t *testing.T) {
+func TestHeader(t *testing.T) {
 	var want, got string
 
 	cache := createAndLoadCSVCache(fixturePath, t)
-	sut := cache.HeaderRow
+	sut := cache.Header
 
 	want = "unique_id"
 	got = sut[0]
@@ -157,7 +157,7 @@ func TestWriteCache(t *testing.T) {
 
 	sut2 := createAndLoadCSVCache(tmpFilePath, t)
 
-	assertRecordsEqual(sut1.HeaderRow, sut2.HeaderRow, t)
+	assertRecordsEqual(sut1.Header, sut2.Header, t)
 	assertRecordsEqual(sut1.GetRecord("m63xss7g"), sut2.GetRecord("m63xss7g"), t)
 	assertRecordsEqual(sut1.GetRecord("ghx3fpf7"), sut2.GetRecord("ghx3fpf7"), t)
 	assertRecordsEqual(sut1.GetRecord("zkh18f2c"), sut2.GetRecord("zkh18f2c"), t)
