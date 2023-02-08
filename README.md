@@ -21,16 +21,12 @@ updated cache-data back to disk.
 
 #### Cache usage pseudo code
 * instantiate a `CSVCache` object using `csvcache.NewCSVCache()`
-
 * if a cache file exists, load the file contents into the cache using
   `LoadCache()`
-
 * during program execution, query the cache using `GetRecord()`
-
 * if the desired data are not found in the cache, (a "cache miss"),
   collect the data you wish to cache from your data source(s) and
   update the cache using `AddRecord()`
-
 * when execution is complete, check if the cache has been modified
   using `IsModified()`, and if so, write the updated cache-data back
   to disk using `WriteCache()`
