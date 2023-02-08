@@ -33,22 +33,21 @@ updated cache-data back to disk.
 
 
 #### Notes on the CSV File Structure
-The cache contents are persisted on disk as a CSV file.  
-
-The unique identifier for a record (row) in the CSV file MUST always
-be in the first column.  
-
-The consuming application needs to know the order and number of fields
-in a given record.  
+* The cache contents are persisted on disk as a CSV file.  
+* The unique identifier for a record (row) in the CSV file MUST always
+  be in the first column.  
+* The application needs to know the order and number of fields
+  in a given record.  
 
 
 #### General Warning:
 * The entire contents of the cache file are loaded into memory, so
   please take into account any memory limitations in your computing
-  environment before using this package.
+  environment before using this package to cache large amounts of
+  data.
 
 
-#### Specific Example
+#### Example
 ```
 
 //------------------------------------------------------------------------------
