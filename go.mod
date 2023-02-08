@@ -1,3 +1,3 @@
-module github.com/jgpawletko/go-csvcache
+module github.com/nyudlts/go-csvcache
 
 go 1.19
