@@ -5,39 +5,45 @@
 
 ## Overview
 This package provides a simplistic way to cache data in
-comma-separate-value (csv) files.
+Comma-Separated-Value (CSV) files.
 
 
 #### Use case
-In some applications, time consuming API calls are required to
+In some applications, time-consuming API calls are required to
 retrieve small amounts of infrequently updated, or even unchanging,
 data.  This impacts overall application performance, and can lead to
 application failure in the event that network connectivity is lost.
 
-This package allows a applications to cache data in a CSV file. 
+This package allows a applications to cache data in a CSV file, read
+and update the cached data from memory, and if desired, write the
+updated cache-data back to disk.
 
 
 #### Cache usage pseudo code
 * instantiate a `CSVCache` object using `csvcache.NewCSVCache()`
-* specify the path to a cache file
-* if the cache file exists, load the cache using `LoadCache()`
+
+* if a cache file exists, load the file contents into the cache using
+  `LoadCache()`
+
 * during program execution, query the cache using `GetRecord()`
-* on a cache miss, collect the data you wish to cache from data source
-* update the cache using `AddRecord()`
+
+* if the desired data are not found in the cache, (a "cache miss"),
+  collect the data you wish to cache from your data source(s) and
+  update the cache using `AddRecord()`
+
 * when execution is complete, check if the cache has been modified
-  using `IsModified()`
-* if the cache was modified, write the updated cache back to disk
-  using `WriteCache()`
+  using `IsModified()`, and if so, write the updated cache-data back
+  to disk using `WriteCache()`
 
 
 #### Notes on the CSV File Structure
 The cache contents are persisted on disk as a CSV file.  
 
 The unique identifier for a record (row) in the CSV file MUST always
-be in the first column.
+be in the first column.  
 
 The consuming application needs to know the order and number of fields
-in a given record.
+in a given record.  
 
 
 #### General Warning:
