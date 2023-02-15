@@ -5,6 +5,8 @@ import (
 	"io"
 )
 
+const Version = "v0.2.0"
+
 type CSVCache struct {
 	modified bool
 	Header   []string
@@ -22,7 +24,7 @@ func ensureHeaderInit(csvc *CSVCache) {
 	// initialize the Header if it is empty
 	if len(csvc.Header) == 0 {
 		// add default header
-		csvc.Header = []string{"unique_id", "do_type", "count"}
+		csvc.Header = []string{"unique_id", "do_type", "count", "width", "height"}
 	}
 }
 
