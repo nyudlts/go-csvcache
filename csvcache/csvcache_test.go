@@ -70,6 +70,14 @@ func TestHeader(t *testing.T) {
 	want = "count"
 	got = sut[2]
 	assertStringsEqual(want, got, t)
+
+	want = "width"
+	got = sut[3]
+	assertStringsEqual(want, got, t)
+
+	want = "height"
+	got = sut[4]
+	assertStringsEqual(want, got, t)
 }
 
 func TestGetRecordPresent(t *testing.T) {
@@ -77,7 +85,7 @@ func TestGetRecordPresent(t *testing.T) {
 
 	sut := createAndLoadCSVCache(fixturePath, t)
 
-	want = []string{"ghx3fpf7", "image_set", "2"}
+	want = []string{"ghx3fpf7", "image_set", "2", "136", "108"}
 	got = sut.GetRecord("ghx3fpf7")
 	assertRecordsEqual(want, got, t)
 }
@@ -97,10 +105,10 @@ func TestAddRecord(t *testing.T) {
 	got := sut.GetRecord("9ec2c7f5d0c4")
 	assertRecordsEqual(nil, got, t)
 
-	record := []string{"9ec2c7f5d0c4", "whoop", "97"}
+	record := []string{"9ec2c7f5d0c4", "whoop", "97", "100", "1000"}
 	sut.AddRecord(record)
 
-	want := []string{"9ec2c7f5d0c4", "whoop", "97"}
+	want := []string{"9ec2c7f5d0c4", "whoop", "97", "100", "1000"}
 	got = sut.GetRecord("9ec2c7f5d0c4")
 	assertRecordsEqual(want, got, t)
 
@@ -146,12 +154,12 @@ func TestWriteCache(t *testing.T) {
 	assertBoolsEqual(false, sut1.IsModified(), t)
 
 	// add record
-	record := []string{"9ec2c7f5d0c4", "whoop", "97"}
+	record := []string{"9ec2c7f5d0c4", "whoop", "97", "100", "1000"}
 	sut1.AddRecord(record)
 	assertBoolsEqual(true, sut1.IsModified(), t)
 
 	// assert that record is now in cache
-	want := []string{"9ec2c7f5d0c4", "whoop", "97"}
+	want := []string{"9ec2c7f5d0c4", "whoop", "97", "100", "1000"}
 	got = sut1.GetRecord("9ec2c7f5d0c4")
 	assertRecordsEqual(want, got, t)
 
@@ -188,7 +196,7 @@ func TestHeaderInitialized(t *testing.T) {
 
 	sut := NewCSVCache()
 
-	want := []string{"unique_id", "do_type", "count"}
+	want := []string{"unique_id", "do_type", "count", "width", "height"}
 	got := sut.Header
 	assertRecordsEqual(want, got, t)
 }
