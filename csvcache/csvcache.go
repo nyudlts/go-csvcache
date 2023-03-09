@@ -6,7 +6,7 @@ import (
 	"io"
 )
 
-const Version = "v0.2.0"
+const Version = "v0.3.0"
 
 var HEADER_ROW = []string{"unique_id", "do_type", "count", "width", "height"}
 
