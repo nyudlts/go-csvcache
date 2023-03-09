@@ -202,12 +202,50 @@ func TestHeaderInitialized(t *testing.T) {
 	assertRecordsEqual(want, got, t)
 }
 
-/* func TestIncompatibleFile(t *testing.T) {
+func TestIncompatibleFileTooFewColumns(t *testing.T) {
 
-	sut := NewCSVCache()
+	path := filepath.Join(fixtureRoot, "too-few-columns.csv")
+	c := NewCSVCache()
 
-	want := []string{"unique_id", "do_type", "count", "width", "height"}
-	got := sut.Header
-	assertRecordsEqual(want, got, t)
+	r, err := os.Open(path)
+	if err != nil {
+		t.Errorf("problem opening %s", path)
+	}
+	defer r.Close()
+
+	err = c.LoadCache(r)
+	if err == nil {
+		t.Errorf("expected LoadCache() to return an error, but no error returned.")
+		return
+	}
+
+	want := "incompatible csv file: input file header field count does not match current header row configuration"
+	got := err.Error()
+	if want != got {
+		t.Errorf("expected error message to be '%s', but got '%s'", want, got)
+	}
 }
-*/
+
+func TestIncompatibleFileHeaderColumnMismatch(t *testing.T) {
+
+	path := filepath.Join(fixtureRoot, "mismatched-header-columns.csv")
+	c := NewCSVCache()
+
+	r, err := os.Open(path)
+	if err != nil {
+		t.Errorf("problem opening %s", path)
+	}
+	defer r.Close()
+
+	err = c.LoadCache(r)
+	if err == nil {
+		t.Errorf("expected LoadCache() to return an error, but no error returned.")
+		return
+	}
+
+	want := "header fields do not match: idx: 0, want: 'unique_id', got: 'foo'. expecting: [unique_id do_type count width height]"
+	got := err.Error()
+	if want != got {
+		t.Errorf("expected error message to be '%s', but got '%s'", want, got)
+	}
+}
