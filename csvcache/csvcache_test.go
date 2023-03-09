@@ -2,11 +2,12 @@ package csvcache
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 )
 
-const fixturePath = "./testdata/basic.csv"
-const tmpFilePath = "./testdata/tmp.csv"
+const fixtureRoot = "./testdata"
+const tmpFileRoot = "./testdata"
 
 func assertStringsEqual(want, got string, t *testing.T) {
 	if want != got {
@@ -56,7 +57,7 @@ func createAndLoadCSVCache(path string, t *testing.T) *CSVCache {
 func TestHeader(t *testing.T) {
 	var want, got string
 
-	cache := createAndLoadCSVCache(fixturePath, t)
+	cache := createAndLoadCSVCache(filepath.Join(fixtureRoot, "basic.csv"), t)
 	sut := cache.Header
 
 	want = "unique_id"
@@ -83,7 +84,7 @@ func TestHeader(t *testing.T) {
 func TestGetRecordPresent(t *testing.T) {
 	var want, got []string
 
-	sut := createAndLoadCSVCache(fixturePath, t)
+	sut := createAndLoadCSVCache(filepath.Join(fixtureRoot, "basic.csv"), t)
 
 	want = []string{"ghx3fpf7", "image_set", "2", "136", "108"}
 	got = sut.GetRecord("ghx3fpf7")
@@ -92,7 +93,7 @@ func TestGetRecordPresent(t *testing.T) {
 
 func TestGetRecordMissing(t *testing.T) {
 
-	sut := createAndLoadCSVCache(fixturePath, t)
+	sut := createAndLoadCSVCache(filepath.Join(fixtureRoot, "basic.csv"), t)
 
 	got := sut.GetRecord("this-key-does-not-have-a-record")
 	assertRecordsEqual(nil, got, t)
@@ -100,7 +101,7 @@ func TestGetRecordMissing(t *testing.T) {
 
 func TestAddRecord(t *testing.T) {
 
-	sut := createAndLoadCSVCache(fixturePath, t)
+	sut := createAndLoadCSVCache(filepath.Join(fixtureRoot, "basic.csv"), t)
 
 	got := sut.GetRecord("9ec2c7f5d0c4")
 	assertRecordsEqual(nil, got, t)
@@ -116,7 +117,7 @@ func TestAddRecord(t *testing.T) {
 
 func TestIsModified(t *testing.T) {
 
-	sut := createAndLoadCSVCache(fixturePath, t)
+	sut := createAndLoadCSVCache(filepath.Join(fixtureRoot, "basic.csv"), t)
 
 	got := sut.GetRecord("9ec2c7f5d0c4")
 	assertRecordsEqual(nil, got, t)
@@ -146,7 +147,7 @@ func TestAddRecordToCSVCThatWasNotLoadedFromFile(t *testing.T) {
 
 func TestWriteCache(t *testing.T) {
 
-	sut1 := createAndLoadCSVCache(fixturePath, t)
+	sut1 := createAndLoadCSVCache(filepath.Join(fixtureRoot, "basic.csv"), t)
 
 	// assert baseline
 	got := sut1.GetRecord("9ec2c7f5d0c4")
@@ -164,19 +165,19 @@ func TestWriteCache(t *testing.T) {
 	assertRecordsEqual(want, got, t)
 
 	// open the target file
-	w, err := os.Create(tmpFilePath)
+	w, err := os.Create(filepath.Join(tmpFileRoot, "tmp-basic.csv"))
 	if err != nil {
-		t.Errorf("problem creating %s", tmpFilePath)
+		t.Errorf("problem creating %s", filepath.Join(tmpFileRoot, "tmp-basic.csv"))
 	}
 	defer w.Close()
 
 	// write the target file
 	err = sut1.WriteCache(w)
 	if err != nil {
-		t.Errorf("problem writing %s", tmpFilePath)
+		t.Errorf("problem writing %s", filepath.Join(tmpFileRoot, "tmp-basic.csv"))
 	}
 
-	sut2 := createAndLoadCSVCache(tmpFilePath, t)
+	sut2 := createAndLoadCSVCache(filepath.Join(tmpFileRoot, "tmp-basic.csv"), t)
 
 	assertRecordsEqual(sut1.Header, sut2.Header, t)
 	assertRecordsEqual(sut1.GetRecord("m63xss7g"), sut2.GetRecord("m63xss7g"), t)
@@ -186,9 +187,9 @@ func TestWriteCache(t *testing.T) {
 	assertRecordsEqual(sut1.GetRecord("9ec2c7f5d0c4"), sut2.GetRecord("9ec2c7f5d0c4"), t)
 
 	// cleanup
-	err = os.Remove(tmpFilePath)
+	err = os.Remove(filepath.Join(tmpFileRoot, "tmp-basic.csv"))
 	if err != nil {
-		t.Errorf("problem removing %s", tmpFilePath)
+		t.Errorf("problem removing %s", filepath.Join(tmpFileRoot, "tmp-basic.csv"))
 	}
 }
 
@@ -200,3 +201,13 @@ func TestHeaderInitialized(t *testing.T) {
 	got := sut.Header
 	assertRecordsEqual(want, got, t)
 }
+
+/* func TestIncompatibleFile(t *testing.T) {
+
+	sut := NewCSVCache()
+
+	want := []string{"unique_id", "do_type", "count", "width", "height"}
+	got := sut.Header
+	assertRecordsEqual(want, got, t)
+}
+*/
