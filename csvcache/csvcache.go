@@ -2,10 +2,13 @@ package csvcache
 
 import (
 	"encoding/csv"
+	"fmt"
 	"io"
 )
 
-const Version = "v0.2.0"
+const Version = "v0.3.0"
+
+var HEADER_ROW = []string{"unique_id", "do_type", "count", "width", "height"}
 
 type CSVCache struct {
 	modified bool
@@ -24,7 +27,7 @@ func ensureHeaderInit(csvc *CSVCache) {
 	// initialize the Header if it is empty
 	if len(csvc.Header) == 0 {
 		// add default header
-		csvc.Header = []string{"unique_id", "do_type", "count", "width", "height"}
+		csvc.Header = HEADER_ROW
 	}
 }
 
@@ -51,6 +54,17 @@ func (csvc *CSVCache) LoadCache(r io.Reader) error {
 		}
 		// skip the header record
 		if headerRow {
+			// compare header rows to make sure that they align
+			if len(record) != len(HEADER_ROW) {
+				return fmt.Errorf("incompatible csv file: input file header field count does not match current header row configuration")
+			}
+
+			for idx, value := range HEADER_ROW {
+				if value != record[idx] {
+					return fmt.Errorf("header fields do not match: idx: %d, want: '%s', got: '%s'. expecting: %v", idx, value, record[idx], HEADER_ROW)
+				}
+			}
+
 			headerRow = false
 			csvc.Header = record
 			continue
